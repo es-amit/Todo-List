@@ -51,7 +51,7 @@ class DBHelper{
   }
 
   // Deleting from database
-  Future<int> delete(int id) async{
+  Future<int> delete(String id) async{
     var dbClient = await db;
     return await dbClient!.delete('mytodo', where: 'id= ?', whereArgs: [id]);
 
@@ -61,7 +61,5 @@ class DBHelper{
     var dbClient = await db;
     return await dbClient!.update('mytodo', todo.toMap(),where: 'id = ?',whereArgs: [todo.id]);
   }
-
-
   
 }

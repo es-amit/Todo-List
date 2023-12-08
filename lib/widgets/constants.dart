@@ -16,12 +16,14 @@ class CustomButton extends StatelessWidget {
         width: MediaQuery.of(context).size.width /2.5,
         height: 55,
         decoration: BoxDecoration(
-          gradient: LinearGradient(colors: [
-            containerColor.withOpacity(0.7),
-            containerColor.withOpacity(0.9),     
-          ],
-          begin: Alignment.bottomLeft,
-          end: Alignment.topRight
+          gradient: LinearGradient(
+            colors: [
+              containerColor.withOpacity(0.55),
+              containerColor
+                  
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter
           ),
           borderRadius: BorderRadius.circular(15)
         ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:to_do_list/database/database.dart';
 import 'package:to_do_list/model/todo.dart';
+import 'package:to_do_list/screen/home_screen.dart';
 import 'package:to_do_list/widgets/constants.dart';
 
 class NewTask extends StatefulWidget {
@@ -179,7 +180,7 @@ class _NewTaskState extends State<NewTask> {
                       )
                     );
                     print('inserted data'); 
-                    Navigator.pop(context);
+                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> const HomeScreen()));
                   }
                   catch(e){
                     print("insert error");
