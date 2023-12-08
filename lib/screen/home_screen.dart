@@ -28,16 +28,18 @@ class _HomeScreenState extends State<HomeScreen> {
     dbHelper!.delete(key);
   }
 
-  statusTask(Todo currentTodo) async{
-    dbHelper!.update(Todo(
+
+  statusTask(Todo currentTodo,bool updateStatus,String id) async{
+    dbHelper!.updateStatus(Todo(
       title: currentTodo.title, 
       description: currentTodo.description, 
       taskPriority: currentTodo.taskPriority, 
       category: currentTodo.category, 
-      status: !(currentTodo.status)
+      status: updateStatus
       )
+      ,id     
     );
-    print(currentTodo.status);
+    loadData();
   }
   
   @override
@@ -71,18 +73,35 @@ class _HomeScreenState extends State<HomeScreen> {
                       deleteTask(snapshot.data![index].id);
                     },
                     child: Card(
+                      color: priorityColor[snapshot.data![index].taskPriority],
                       elevation: 10, 
                       clipBehavior: Clip.hardEdge,
                       child: ListTile(
+                        onTap: (){
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=> NewTask(editTask: true)));
+                        },
                         leading: Icon(categoryIcons[snapshot.data![index].category],
                           size: 32,),
                         title: Text(snapshot.data![index].title),
-                        subtitle: Text(snapshot.data![index].description),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(snapshot.data![index].description),
+                            Row(
+                              children: [
+                                Text("Category: ${snapshot.data![index].category.name}"),
+                                Text(" | Date: ${snapshot.data![index].taskPriority.name}"),             
+                              ],
+                            )
+                          ],
+                        ),
+                        isThreeLine: true,
                         trailing: Checkbox(
                           value: snapshot.data![index].status, 
-                          onChanged: (value){
-                            value = !value!;
-                            statusTask(snapshot.data![index]);
+                          onChanged: (newvalue){
+                            setState(() {
+                              statusTask(snapshot.data![index], newvalue!,snapshot.data![index].id);
+                            });
                           }
                         ),
                       ),
@@ -100,7 +119,7 @@ class _HomeScreenState extends State<HomeScreen> {
         alignment: Alignment.bottomCenter,
         child: InkWell(
           onTap: (){
-            Navigator.push(context,MaterialPageRoute(builder: (context)=>const NewTask()));
+            Navigator.push(context,MaterialPageRoute(builder: (context)=>NewTask(editTask: false,)));
           },
           child: Container(
             width: MediaQuery.of(context).size.width * (1/2),

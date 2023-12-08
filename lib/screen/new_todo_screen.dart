@@ -4,8 +4,11 @@ import 'package:to_do_list/model/todo.dart';
 import 'package:to_do_list/screen/home_screen.dart';
 import 'package:to_do_list/widgets/constants.dart';
 
+// ignore: must_be_immutable
 class NewTask extends StatefulWidget {
-  const NewTask({super.key});
+  NewTask({super.key,required this.editTask});
+
+  bool editTask;
 
   @override
   State<NewTask> createState() => _NewTaskState();
@@ -19,6 +22,7 @@ class _NewTaskState extends State<NewTask> {
   DateTime? _selectedDate;
   DBHelper dbHelper = DBHelper();
   late Future<List<Todo>> allTasks;
+
   
 
   @override
@@ -59,7 +63,7 @@ class _NewTaskState extends State<NewTask> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title:const  Text("New Task"),
+        title: Text(widget.editTask ? "Edit Todo" : "Add new Todo" ),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 30),
@@ -168,7 +172,7 @@ class _NewTaskState extends State<NewTask> {
                   Navigator.pop(context);
                 }),
                 const SizedBox(width: 10,),
-                CustomButton(hintText: "Add New Task",containerColor: Colors.green,nextScreen: (){
+                CustomButton(hintText: widget.editTask ? "Update" : "Add New Task",containerColor: Colors.green,nextScreen: (){
                   try{
                     dbHelper.insert(Todo(
                       title: titleController.text, 

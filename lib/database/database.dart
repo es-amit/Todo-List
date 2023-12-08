@@ -62,4 +62,13 @@ class DBHelper{
     return await dbClient!.update('mytodo', todo.toMap(),where: 'id = ?',whereArgs: [todo.id]);
   }
   
+  Future<int> updateStatus(Todo todo, String id) async {
+  var dbClient = await db;
+  return await dbClient!.update(
+    'mytodo',
+    {'status': todo.status ? 1 : 0}, // Assuming status is a boolean in Todo, convert to 1 or 0
+    where: 'id = ?',
+    whereArgs: [id],
+  );
+}
 }

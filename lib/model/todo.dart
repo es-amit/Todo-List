@@ -27,6 +27,14 @@ const categoryIcons = {
   Category.work : Icons.work
 };
 
+ const priorityColor = {
+  Priority.high : Color.fromARGB(255, 241, 164, 164),
+  Priority.medium : Color.fromARGB(255, 255, 255, 164),
+  Priority.low : Color.fromARGB(255, 140, 237, 190),
+  
+  
+};
+
 
 class Todo{
   late String id;
