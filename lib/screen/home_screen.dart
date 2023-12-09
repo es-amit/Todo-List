@@ -30,6 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
        SnackBar(
         content: Text(msg),
         duration: const Duration(milliseconds: 2000),
+        
       )
     );
   }
@@ -93,11 +94,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     
                     IconButton(onPressed: (){
-                      Navigator.push(context,MaterialPageRoute(builder: (context)=>NewTask(editTask: false,)));
+                      Navigator.pushReplacement(context,MaterialPageRoute(builder: (context)=>NewTask(editTask: false,)));
                     },
                     
                     icon: const Icon(Icons.add_circle_rounded,
-                      
+                      color: Colors.grey,
+                      size: 80,
                       
                     )
                     ),
