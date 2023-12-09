@@ -23,6 +23,7 @@ class _NewTaskState extends State<NewTask> {
   Priority _selectedPriority = Priority.low;
   DateTime? _selectedDate;
   DBHelper dbHelper = DBHelper();
+  final _formKey = GlobalKey<FormState>();
   late Future<List<Todo>> allTasks;
 
   
@@ -72,159 +73,191 @@ class _NewTaskState extends State<NewTask> {
     final keyboardSpace = MediaQuery.of(context).viewInsets.bottom;
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.editTask ? "Edit Todo" : "Add new Todo" ),
+        centerTitle: true,
+        title: Text(widget.editTask ? "Edit Todo" : "Add new Todo" ,
+          style: const TextStyle(
+            fontSize: 30,
+            fontStyle: FontStyle.italic
+          ),),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(20, 30, 20, keyboardSpace + 18),
-        child: Column(
-          children: [
-            TextField(
-              controller: titleController,
-              maxLength: 15,
-              decoration: InputDecoration(
-                hintText: "Title...",
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(15),
-                  borderSide: const BorderSide(
-                    color: Colors.grey,
-                    strokeAlign: 1.5
-                  )
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              TextFormField(
+                controller: titleController,
+                maxLength: 15,
+                decoration: InputDecoration(
+                  hintText: "Title...",
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                    borderSide: const BorderSide(
+                      color: Colors.grey,
+                      strokeAlign: 1.5
+                    )
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                    borderSide: const BorderSide(
+                      color: Colors.blue,
+                      strokeAlign: 1.5
+                    )
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                    borderSide: const BorderSide(
+                      color: Colors.redAccent,
+                      strokeAlign: 1.5
+                    )
+                  ),
                 ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(15),
-                  borderSide: const BorderSide(
-                    color: Colors.blue,
-                    strokeAlign: 1.5
-                  )
-                )
+                validator: (value){
+                  if(value!.isEmpty){
+                    return "Please Enter Title!";
+                  }
+                  return null;
+                },
               ),
-            ),
-            const SizedBox(height: 20,),
-            TextField(
-              controller: descriptionController,
-              maxLength: 60,
-              maxLines: 5,
-              decoration: InputDecoration(
-                hintText: "Description...",
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(15),
-                  borderSide: const BorderSide(
-                    color: Colors.grey,
-                    strokeAlign: 1.5
+              const SizedBox(height: 20,),
+              TextFormField(
+                controller: descriptionController,
+                maxLength: 60,
+                maxLines: 5,
+                decoration: InputDecoration(
+                  hintText: "Description...",
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                    borderSide: const BorderSide(
+                      color: Colors.grey,
+                      strokeAlign: 1.5
+                    )
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                    borderSide: const BorderSide(
+                      color: Colors.blue,
+                      strokeAlign: 1.5
+                    )
                   )
                 ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(15),
-                  borderSide: const BorderSide(
-                    color: Colors.blue,
-                    strokeAlign: 1.5
-                  )
-                )
               ),
-            ),
-            const SizedBox(height: 20,),
-            Row(
-              children: [
-                DropdownButton(
-                  value: _selectedCategory,
-                  items: Category.values.map(
-                    (category) => DropdownMenuItem(
-                      value: category,
-                      child: Text(
-                        category.name.toUpperCase()))).toList(), 
-                  onChanged: (value){
-                    if(value ==null){
-                      return;
-                  }
-                  setState(() {
-                    _selectedCategory = value;
-                    });
-                  }
-                ),
-                const Spacer(),
-                DropdownButton(
-                  value: _selectedPriority,
-                  items: Priority.values.map(
-                    (priority) => DropdownMenuItem(
-                      value: priority,
-                      child: Text(
-                        priority.name.toUpperCase()))).toList(), 
-                  onChanged: (value){
-                    if(value == null){
-                      return;
-                  }
-                  setState(() {
-                    _selectedPriority = value;
-                    });
-                  }
-                ),
-                const Spacer(),
-                Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.end,
+              const SizedBox(height: 20,),
+              Row(
                 children: [
-                  IconButton(
-                    onPressed: (){
-                      _presentDatePicker();
-                    },
-                    icon: const Icon(Icons.calendar_month)),
-                    Text(_selectedDate == null ? "No date Selected" : formatter.format(_selectedDate!)),
-                  ],
-                )
-              ],
-            ),
-            const SizedBox(height: 30,),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CustomButton(hintText: 'Cancel', containerColor: Colors.redAccent,nextScreen: (){
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> const HomeScreen()));
-                }),
-                const SizedBox(width: 10,),
-                CustomButton(hintText: widget.editTask ? "Update" : "Add New Task",containerColor: Colors.green,nextScreen: (){
-                  if(!widget.editTask){
-                    try{
-                    dbHelper.insert(Todo(
-
-                      title: titleController.text, 
-                      description: descriptionController.text, 
-                      date: _selectedDate!, 
-                      taskPriority: _selectedPriority, 
-                      category: _selectedCategory, 
-                      status: false
-                      )
-                    );
+                  DropdownButton(
+                    value: _selectedCategory,
+                    items: Category.values.map(
+                      (category) => DropdownMenuItem(
+                        value: category,
+                        child: Text(
+                          category.name.toUpperCase()))).toList(), 
+                    onChanged: (value){
+                      if(value ==null){
+                        return;
+                    }
+                    setState(() {
+                      _selectedCategory = value;
+                      });
+                    }
+                  ),
+                  const Spacer(),
+                  DropdownButton(
+                    value: _selectedPriority,
+                    items: Priority.values.map(
+                      (priority) => DropdownMenuItem(
+                        value: priority,
+                        child: Text(
+                          priority.name.toUpperCase()))).toList(), 
+                    onChanged: (value){
+                      if(value == null){
+                        return;
+                    }
+                    setState(() {
+                      _selectedPriority = value;
+                      });
+                    }
+                  ),
+                  const Spacer(),
+                  Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    IconButton(
+                      onPressed: (){
+                        _presentDatePicker();
+                      },
+                      icon: const Icon(Icons.calendar_month)),
+                      Text(_selectedDate == null ? "No date Selected" : formatter.format(_selectedDate!)),
+                    ],
+                  )
+                ],
+              ),
+              const SizedBox(height: 30,),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CustomButton(hintText: 'Cancel', containerColor: Colors.redAccent,nextScreen: (){
                     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> const HomeScreen()));
-                  }
-                  catch(e){
-                    // error occured
-                  }
-                 }
-                  else{
-                    try{
-                    dbHelper.update(
-                      widget.todo!.id!,
-                      Todo(
-                        id:widget.todo!.id, 
+                  }),
+                  const SizedBox(width: 10,),
+                  CustomButton(hintText: widget.editTask ? "Update" : "Add New Task",containerColor: Colors.green,nextScreen: (){
+                    if(_formKey.currentState!.validate() && _selectedDate != null){
+                      if(!widget.editTask){
+                      try{
+                      dbHelper.insert(Todo(
                         title: titleController.text, 
                         description: descriptionController.text, 
+                        date: _selectedDate!, 
                         taskPriority: _selectedPriority, 
                         category: _selectedCategory, 
-                        status: widget.todo!.status, 
-                        date: _selectedDate!
+                        status: false
                         )
                       );
                       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> const HomeScreen()));
                     }
                     catch(e){
-                      // catching error
+                      // error occured
+                    }
+                   }
+                    else{
+                      try{
+                      dbHelper.update(
+                        widget.todo!.id!,
+                        Todo(
+                          id:widget.todo!.id, 
+                          title: titleController.text, 
+                          description: descriptionController.text, 
+                          taskPriority: _selectedPriority, 
+                          category: _selectedCategory, 
+                          status: widget.todo!.status, 
+                          date: _selectedDate!
+                          )
+                        );
+                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> const HomeScreen()));
+                      }
+                      catch(e){
+                        // catching error
+                      }
+                      }
+                    }
+                    else{
+                      ScaffoldMessenger.of(context).clearSnackBars();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Date and Title fields are mandatory!"),
+                          duration: Duration(milliseconds: 2000),
+                        )
+                      );
+                      
                     }
                   }
-                }
-                )
-              ],
-            )
-          ],
+                  )
+                ],
+              )
+            ],
+          ),
         ),
       ),
     );

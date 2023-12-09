@@ -30,7 +30,6 @@ class _HomeScreenState extends State<HomeScreen> {
        SnackBar(
         content: Text(msg),
         duration: const Duration(milliseconds: 2000),
-        
       )
     );
   }
@@ -83,7 +82,6 @@ class _HomeScreenState extends State<HomeScreen> {
           future: allTasks, 
           builder: (context,AsyncSnapshot<List<Todo>> snapshot){
             if(!snapshot.hasData || snapshot.data == null){
-              print(snapshot.error);
               return const Center(
                 child: Text('error'),
               );
