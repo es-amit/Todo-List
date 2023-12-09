@@ -38,7 +38,7 @@ class Todo{
   late final int? id;
   late String title;
   late String description;
-  //DateTime date = DateTime.now();
+  late DateTime date;
   late Priority taskPriority;
   late bool status;
   late Category category;
@@ -48,7 +48,7 @@ class Todo{
       this.id,
       required this.title,
       required this.description,
-      // required this.date,
+      required this.date,
       required this.taskPriority,
       required this.category,
       required this.status,
@@ -56,31 +56,30 @@ class Todo{
   });
 
   Map<String,dynamic> toMap(){
-    // DateFormat formatDate = DateFormat('yyyy-MM-dd');
-    // String dateString =date.toIso8601String();
-    // print(dateString);
+    String dateString = "${date.day}/${date.month}/${date.year}";
     return {
       'id' : id,
       'title' : title,
       'description' : description,
       'priority' : taskPriority.toString().split('.').last,
       'category' : category.toString().split('.').last,
-      // 'date' : dateString,
+      'date' : dateString,
       'status' : status ? 1 : 0,
     };
   }
 
   Todo.fromMap(Map<String,dynamic> map){
-    // String dateString = map['date'];
-    // DateFormat format = DateFormat("yyyy-MM-dd");
-    // DateTime dateTime = format.parse(dateString);
     id = map['id'];
     title = map['title'];
     description = map['description'];
     status = map['status'] == 1;
     taskPriority = Priority.values.firstWhere((element) => element.toString() == 'Priority.${map['priority']}');
     category = Category.values.firstWhere((element) => element.toString() == 'Category.${map['category']}');
-    // date = dateTime;
+    List<String> dateParts = map['date'].split('/');
+    int day = int.parse(dateParts[0]);
+    int month = int.parse(dateParts[1]);
+    int year = int.parse(dateParts[2]);
+    date = DateTime(year, month, day);
   }
   
 }

@@ -58,7 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
       description: currentTodo.description, 
       taskPriority: currentTodo.taskPriority, 
       category: currentTodo.category, 
-      // date: currentTodo.date,
+      date: currentTodo.date,
       status: updateStatus
       )
       ,id     
@@ -83,8 +83,9 @@ class _HomeScreenState extends State<HomeScreen> {
           future: allTasks, 
           builder: (context,AsyncSnapshot<List<Todo>> snapshot){
             if(!snapshot.hasData || snapshot.data == null){
+              print(snapshot.error);
               return const Center(
-                child: CircularProgressIndicator(),
+                child: Text('error'),
               );
             }
             else if(snapshot.data!.isEmpty){
@@ -159,7 +160,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               Navigator.pushReplacement(
                                 context, 
                                 
-                                MaterialPageRoute(builder: (context)=> NewTask(editTask: true, todo: Todo(id:snapshot.data![index].id, title: snapshot.data![index].title, description: snapshot.data![index].description, taskPriority: snapshot.data![index].taskPriority, category: snapshot.data![index].category, status: snapshot.data![index].status),
+                                MaterialPageRoute(builder: (context)=> NewTask(editTask: true, todo: Todo(id:snapshot.data![index].id, title: snapshot.data![index].title, description: snapshot.data![index].description, taskPriority: snapshot.data![index].taskPriority, category: snapshot.data![index].category, status: snapshot.data![index].status, date: snapshot.data![index].date),
                                   )
                                 )
                               );
@@ -188,7 +189,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           Row(
                             children: [
                               Text("Priority: ${snapshot.data![index].taskPriority.name}"),
-                              Text(" | Date: ${snapshot.data![index].category.name}")
+                              Text(" | Due Date: ${snapshot.data![index].date.day}/${snapshot.data![index].date.month}/${snapshot.data![index].date.year}")
                             ],
                           )
                         ],

@@ -56,6 +56,7 @@ class _NewTaskState extends State<NewTask> {
       lastDate: lastDate
     );
     setState(() {
+      
       _selectedDate = pickedDate;
     });
   }
@@ -187,7 +188,7 @@ class _NewTaskState extends State<NewTask> {
 
                       title: titleController.text, 
                       description: descriptionController.text, 
-                      // date: _selectedDate!, 
+                      date: _selectedDate!, 
                       taskPriority: _selectedPriority, 
                       category: _selectedCategory, 
                       status: false
@@ -209,7 +210,8 @@ class _NewTaskState extends State<NewTask> {
                         description: descriptionController.text, 
                         taskPriority: _selectedPriority, 
                         category: _selectedCategory, 
-                        status: widget.todo!.status
+                        status: widget.todo!.status, 
+                        date: _selectedDate!
                         )
                       );
                       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> const HomeScreen()));
