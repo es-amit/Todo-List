@@ -71,11 +71,8 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text("Todo list",
-          style: TextStyle(
-            fontSize: 30,
-            fontStyle: FontStyle.italic
-          ),),
+        title: Text("Todo list",
+          style: Theme.of(context).appBarTheme.titleTextStyle),
       ),
       body:SafeArea(
         child: FutureBuilder(
@@ -83,7 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
           builder: (context,AsyncSnapshot<List<Todo>> snapshot){
             if(!snapshot.hasData || snapshot.data == null){
               return const Center(
-                child: Text('error'),
+                child: CircularProgressIndicator(),
               );
             }
             else if(snapshot.data!.isEmpty){
@@ -91,28 +88,21 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text("No Tasks Available",
-                      style: TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black38
-                      ),
+                    Text("No Tasks Available",
+                      style: Theme.of(context).textTheme.displayLarge
                     ),
                     
                     IconButton(onPressed: (){
                       Navigator.push(context,MaterialPageRoute(builder: (context)=>NewTask(editTask: false,)));
                     },
+                    
                     icon: const Icon(Icons.add_circle_rounded,
-                      color: Colors.black38,
-                      size: 80
-                      )
+                      
+                      
+                    )
                     ),
-                    const Text("Click here to Add Tasks",
-                      style: TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black38
-                  ),
+                    Text("Click here to Add Tasks",
+                      style: Theme.of(context).textTheme.displayLarge
                   ),
                   ],
                 )
@@ -186,8 +176,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           Row(
                             children: [
-                              Text("Priority: ${snapshot.data![index].taskPriority.name}"),
-                              Text(" | Due Date: ${snapshot.data![index].date.day}/${snapshot.data![index].date.month}/${snapshot.data![index].date.year}")
+                              Text("Priority: ${snapshot.data![index].taskPriority.name}",style: Theme.of(context).textTheme.labelSmall,),
+                              Text(" | Due Date: ${snapshot.data![index].date.day}/${snapshot.data![index].date.month}/${snapshot.data![index].date.year}",style: Theme.of(context).textTheme.labelSmall)
                             ],
                           )
                         ],

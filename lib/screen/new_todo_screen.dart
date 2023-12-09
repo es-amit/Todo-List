@@ -75,10 +75,7 @@ class _NewTaskState extends State<NewTask> {
       appBar: AppBar(
         centerTitle: true,
         title: Text(widget.editTask ? "Edit Todo" : "Add new Todo" ,
-          style: const TextStyle(
-            fontSize: 30,
-            fontStyle: FontStyle.italic
-          ),),
+          style: Theme.of(context).appBarTheme.titleTextStyle),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(20, 30, 20, keyboardSpace + 18),
@@ -95,6 +92,13 @@ class _NewTaskState extends State<NewTask> {
                     borderRadius: BorderRadius.circular(15),
                     borderSide: const BorderSide(
                       color: Colors.grey,
+                      strokeAlign: 1.5
+                    )
+                  ),
+                  focusedErrorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                    borderSide: const BorderSide(
+                      color: Colors.red,
                       strokeAlign: 1.5
                     )
                   ),
@@ -188,7 +192,10 @@ class _NewTaskState extends State<NewTask> {
                       onPressed: (){
                         _presentDatePicker();
                       },
-                      icon: const Icon(Icons.calendar_month)),
+                      icon: const Icon(Icons.calendar_month,
+                        color: Colors.grey,
+                        size: 30,
+                      )),
                       Text(_selectedDate == null ? "No date Selected" : formatter.format(_selectedDate!)),
                     ],
                   )
