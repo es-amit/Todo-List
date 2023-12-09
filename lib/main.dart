@@ -163,10 +163,6 @@ ThemeData lightTheme(){
         color: Colors.black38
       )
     ),
-    iconTheme: const IconThemeData(
-      color: Colors.black38,
-      size: 80
-    )
     
   );
 }
