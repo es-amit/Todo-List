@@ -34,13 +34,21 @@ class _HomeScreenState extends State<HomeScreen> {
       )
     );
   }
-  deleteTask(int key,int index) async{
-    await dbHelper!.delete(key);
-    showSnackbar("Item Deleted!!");
-    setState(() {
-      allTasks = dbHelper!.getDataList();
+  deleteTask(int key, int index) async {
+  await dbHelper!.delete(key);
+  showSnackbar("Item Deleted!!");
+  
+  setState(() {
+    // allTasks = dbHelper!.getDataList(); // Refresh the data list
+    
+    // Alternatively, if you want to remove the item immediately without refreshing the data from the DB:
+    allTasks.then((tasks) {
+      tasks.removeAt(index);
+      return tasks;
     });
-  }
+  });
+}
+
 
 
   statusTask(Todo currentTodo,bool updateStatus,int id) async{
@@ -75,7 +83,6 @@ class _HomeScreenState extends State<HomeScreen> {
           future: allTasks, 
           builder: (context,AsyncSnapshot<List<Todo>> snapshot){
             if(!snapshot.hasData || snapshot.data == null){
-              print(snapshot.error);
               return const Center(
                 child: CircularProgressIndicator(),
               );
@@ -121,6 +128,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     direction: DismissDirection.endToStart,
                     onDismissed: (direction){
                       deleteTask(snapshot.data![index].id!,index);
+                      
                     },
                     background: Container(
                       margin:const  EdgeInsets.only(bottom: 10),
@@ -147,8 +155,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             splashColor: Colors.white,
                             contentPadding:const  EdgeInsets.symmetric(horizontal: 15,vertical: 10),
                             onTap: (){
-                              print("home screen wali id: ${snapshot.data![index].id}");
-                              
+                            
                               Navigator.pushReplacement(
                                 context, 
                                 

@@ -60,7 +60,6 @@ class DBHelper{
 
   Future<int> update(int id, Todo todo) async {
   try {
-    print("Database wali id: $id");
     var dbClient = await db;
     int rows = await dbClient!.update(
       'mytodo',
@@ -75,10 +74,8 @@ class DBHelper{
       where: 'id = ?',
       whereArgs: [todo.id],
     );
-      print("Rows updated: $rows");
       return rows;
   } catch (e) {
-      print("Update error: $e");
       return 0;
   }
 }
