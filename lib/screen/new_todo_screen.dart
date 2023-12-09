@@ -6,7 +6,9 @@ import 'package:to_do_list/widgets/constants.dart';
 
 // ignore: must_be_immutable
 class NewTask extends StatefulWidget {
-  NewTask({super.key,required this.editTask});
+  NewTask({super.key,required this.editTask,this.todo});
+
+  Todo? todo;
 
   bool editTask;
 
@@ -15,8 +17,8 @@ class NewTask extends StatefulWidget {
 }
 
 class _NewTaskState extends State<NewTask> {
-  final TextEditingController titleController = TextEditingController();
-  final TextEditingController descriptionController = TextEditingController();
+  TextEditingController titleController = TextEditingController();
+  TextEditingController descriptionController = TextEditingController();
   Category _selectedCategory = Category.food;
   Priority _selectedPriority = Priority.low;
   DateTime? _selectedDate;
@@ -30,23 +32,28 @@ class _NewTaskState extends State<NewTask> {
     super.initState();
     dbHelper = DBHelper();
     loadData();
+    if(widget.editTask){
+      titleController= TextEditingController(text: widget.todo!.title);
+      descriptionController= TextEditingController(text: widget.todo!.description);
+      _selectedCategory= widget.todo!.category;
+      _selectedPriority= widget.todo!.taskPriority;
+    }
   }
 
   loadData() async{
     allTasks = dbHelper.getDataList();
   }
 
-  
 
   void _presentDatePicker() async{
 
     final now = DateTime.now();
-    final firstDate = DateTime(now.year - 1, now.month, now.day);
+    final lastDate = DateTime(now.year+1,now.month,now.day);
     final pickedDate = await showDatePicker(
       initialDate: now,
       context: context, 
-      firstDate: firstDate, 
-      lastDate: now
+      firstDate: now, 
+      lastDate: lastDate
     );
     setState(() {
       _selectedDate = pickedDate;
@@ -61,12 +68,13 @@ class _NewTaskState extends State<NewTask> {
 
   @override
   Widget build(BuildContext context) {
+    final keyboardSpace = MediaQuery.of(context).viewInsets.bottom;
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.editTask ? "Edit Todo" : "Add new Todo" ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 30),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.fromLTRB(20, 30, 20, keyboardSpace + 18),
         child: Column(
           children: [
             TextField(
@@ -169,12 +177,14 @@ class _NewTaskState extends State<NewTask> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 CustomButton(hintText: 'Cancel', containerColor: Colors.redAccent,nextScreen: (){
-                  Navigator.pop(context);
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> const HomeScreen()));
                 }),
                 const SizedBox(width: 10,),
                 CustomButton(hintText: widget.editTask ? "Update" : "Add New Task",containerColor: Colors.green,nextScreen: (){
-                  try{
+                  if(!widget.editTask){
+                    try{
                     dbHelper.insert(Todo(
+
                       title: titleController.text, 
                       description: descriptionController.text, 
                       // date: _selectedDate!, 
@@ -183,13 +193,33 @@ class _NewTaskState extends State<NewTask> {
                       status: false
                       )
                     );
-                    print('inserted data'); 
                     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> const HomeScreen()));
                   }
                   catch(e){
-                    print("insert error");
+                    // error occured
                   }
-                },)
+                 }
+                  else{
+                    try{
+                    dbHelper.update(
+                      widget.todo!.id!,
+                      Todo(
+                        id:widget.todo!.id, 
+                        title: titleController.text, 
+                        description: descriptionController.text, 
+                        taskPriority: _selectedPriority, 
+                        category: _selectedCategory, 
+                        status: widget.todo!.status
+                        )
+                      );
+                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> const HomeScreen()));
+                    }
+                    catch(e){
+                      // catching error
+                    }
+                  }
+                }
+                )
               ],
             )
           ],

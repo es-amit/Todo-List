@@ -1,7 +1,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:uuid/uuid.dart';
 
 enum Priority{
   high,
@@ -11,7 +10,6 @@ enum Priority{
 
 final formatter = DateFormat.yMd();
 
-const uuid = Uuid();
 
 enum Category{
   work,
@@ -37,27 +35,30 @@ const categoryIcons = {
 
 
 class Todo{
-  late String id;
+  late final int? id;
   late String title;
   late String description;
-  //late DateTime date;
+  //DateTime date = DateTime.now();
   late Priority taskPriority;
   late bool status;
   late Category category;
 
-  Todo({
-    required this.title,
-    required this.description,
-   // required this.date,
-    required this.taskPriority,
-    required this.category,
-    required this.status,
+  Todo(
+    { 
+      this.id,
+      required this.title,
+      required this.description,
+      // required this.date,
+      required this.taskPriority,
+      required this.category,
+      required this.status,
     
-  }) : id = uuid.v4();
+  });
 
   Map<String,dynamic> toMap(){
-    // DateFormat format = DateFormat('yyyy-MM-dd');
-    // String dateString = format.format(date);
+    // DateFormat formatDate = DateFormat('yyyy-MM-dd');
+    // String dateString =date.toIso8601String();
+    // print(dateString);
     return {
       'id' : id,
       'title' : title,

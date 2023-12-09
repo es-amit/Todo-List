@@ -32,6 +32,17 @@ var theme = ThemeData(
       fontSize: 20,
       color: Colors.white
     ),
+    labelMedium: TextStyle(
+      color: Colors.black,
+      fontSize: 20,
+      letterSpacing: 1.5,
+      fontWeight: FontWeight.w600
+    ),
+    labelSmall: TextStyle(
+      color: Colors.black,
+      fontSize: 16,
+      fontWeight: FontWeight.w400
+    )
   )
   
 );

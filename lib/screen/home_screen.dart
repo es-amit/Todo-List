@@ -24,21 +24,38 @@ class _HomeScreenState extends State<HomeScreen> {
     allTasks = dbHelper!.getDataList();
   }
 
-  deleteTask(String key) async{
-    dbHelper!.delete(key);
+  void showSnackbar(String msg){
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(
+       SnackBar(
+        content: Text(msg),
+        duration: const Duration(milliseconds: 2000),
+        
+      )
+    );
+  }
+  deleteTask(int key,int index) async{
+    await dbHelper!.delete(key);
+    showSnackbar("Item Deleted!!");
+    setState(() {
+      allTasks = dbHelper!.getDataList();
+    });
   }
 
 
-  statusTask(Todo currentTodo,bool updateStatus,String id) async{
+  statusTask(Todo currentTodo,bool updateStatus,int id) async{
     dbHelper!.updateStatus(Todo(
+      id: currentTodo.id,
       title: currentTodo.title, 
       description: currentTodo.description, 
       taskPriority: currentTodo.taskPriority, 
       category: currentTodo.category, 
+      // date: currentTodo.date,
       status: updateStatus
       )
       ,id     
     );
+    showSnackbar(updateStatus ? "Task Completed!!" : "Task Uncomplete!!");
     loadData();
   }
   
@@ -46,20 +63,53 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Todo list"),
+        centerTitle: true,
+        title: const Text("Todo list",
+          style: TextStyle(
+            fontSize: 30,
+            fontStyle: FontStyle.italic
+          ),),
       ),
       body:SafeArea(
         child: FutureBuilder(
           future: allTasks, 
           builder: (context,AsyncSnapshot<List<Todo>> snapshot){
             if(!snapshot.hasData || snapshot.data == null){
+              print(snapshot.error);
               return const Center(
                 child: CircularProgressIndicator(),
               );
             }
             else if(snapshot.data!.isEmpty){
-              return const Center(
-                child: Text("No tasks available"),
+              return  Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text("No Tasks Available",
+                      style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black38
+                      ),
+                    ),
+                    
+                    IconButton(onPressed: (){
+                      Navigator.push(context,MaterialPageRoute(builder: (context)=>NewTask(editTask: false,)));
+                    },
+                    icon: const Icon(Icons.add_circle_rounded,
+                      color: Colors.black38,
+                      size: 80
+                      )
+                    ),
+                    const Text("Click here to Add Tasks",
+                      style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black38
+                  ),
+                  ),
+                  ],
+                )
               );
             }
             else{
@@ -70,40 +120,71 @@ class _HomeScreenState extends State<HomeScreen> {
                     key: ValueKey(snapshot.data![index].id),
                     direction: DismissDirection.endToStart,
                     onDismissed: (direction){
-                      deleteTask(snapshot.data![index].id);
+                      deleteTask(snapshot.data![index].id!,index);
                     },
-                    child: Card(
-                      color: priorityColor[snapshot.data![index].taskPriority],
-                      elevation: 10, 
-                      clipBehavior: Clip.hardEdge,
-                      child: ListTile(
-                        onTap: (){
-                          Navigator.push(context, MaterialPageRoute(builder: (context)=> NewTask(editTask: true)));
-                        },
-                        leading: Icon(categoryIcons[snapshot.data![index].category],
-                          size: 32,),
-                        title: Text(snapshot.data![index].title),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(snapshot.data![index].description),
-                            Row(
-                              children: [
-                                Text("Category: ${snapshot.data![index].category.name}"),
-                                Text(" | Date: ${snapshot.data![index].taskPriority.name}"),             
-                              ],
-                            )
-                          ],
-                        ),
-                        isThreeLine: true,
-                        trailing: Checkbox(
-                          value: snapshot.data![index].status, 
-                          onChanged: (newvalue){
-                            setState(() {
-                              statusTask(snapshot.data![index], newvalue!,snapshot.data![index].id);
-                            });
-                          }
-                        ),
+                    background: Container(
+                      margin:const  EdgeInsets.only(bottom: 10),
+                      color: Colors.redAccent,
+                    ),
+                    child: Container(   
+                      padding:const EdgeInsets.only(bottom: 5,left: 10),  
+                      margin: const EdgeInsets.only(bottom: 10,left: 10,right: 10,top: 8),
+                      decoration: BoxDecoration(
+                        color: priorityColor[snapshot.data![index].taskPriority],
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.black38,
+                            blurRadius: 7,
+                            blurStyle: BlurStyle.outer,
+                            spreadRadius: 3
+                          )
+                        ]
+                     ),
+                      child: Column(
+                        children: [
+                          ListTile(
+                            splashColor: Colors.white,
+                            contentPadding:const  EdgeInsets.symmetric(horizontal: 15,vertical: 10),
+                            onTap: (){
+                              print("home screen wali id: ${snapshot.data![index].id}");
+                              
+                              Navigator.pushReplacement(
+                                context, 
+                                
+                                MaterialPageRoute(builder: (context)=> NewTask(editTask: true, todo: Todo(id:snapshot.data![index].id, title: snapshot.data![index].title, description: snapshot.data![index].description, taskPriority: snapshot.data![index].taskPriority, category: snapshot.data![index].category, status: snapshot.data![index].status),
+                                  )
+                                )
+                              );
+                              
+                            },
+                            leading: Icon(categoryIcons[snapshot.data![index].category],
+                              size: 32,),
+                                  
+                            title: Text(snapshot.data![index].title,
+                              style: Theme.of(context).textTheme.labelMedium),
+                            subtitle: Text(snapshot.data![index].description,
+                              style: Theme.of(context).textTheme.labelSmall,),
+                            trailing: Checkbox(
+                              value: snapshot.data![index].status, 
+                              onChanged: (newvalue){
+                                setState(() {
+                                  statusTask(snapshot.data![index], newvalue!,snapshot.data![index].id!);
+                                });
+                              }
+                            ),
+                          ),
+                          const Divider(
+                            color: Colors.black,
+                            thickness: 0.8,
+                          ),
+                          Row(
+                            children: [
+                              Text("Priority: ${snapshot.data![index].taskPriority.name}"),
+                              Text(" | Date: ${snapshot.data![index].category.name}")
+                            ],
+                          )
+                        ],
                       ),
                     ),
                   );
@@ -119,7 +200,7 @@ class _HomeScreenState extends State<HomeScreen> {
         alignment: Alignment.bottomCenter,
         child: InkWell(
           onTap: (){
-            Navigator.push(context,MaterialPageRoute(builder: (context)=>NewTask(editTask: false,)));
+            Navigator.pushReplacement(context,MaterialPageRoute(builder: (context)=>NewTask(editTask: false,)));
           },
           child: Container(
             width: MediaQuery.of(context).size.width * (1/2),
